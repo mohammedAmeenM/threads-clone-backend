@@ -1,0 +1,15 @@
+const express=require('express');
+const userController=require('../controllers/userController')
+const userRouter=express.Router()
+const googleController=require('../controllers/googleController')
+
+
+
+
+userRouter.post('/signup',(userController.signupUser))
+.post('/verifyOTP',(userController.verifyOTP))
+.post('/signup-google',(googleController.googleSignup))
+.post('/login',(userController.loginUser))
+
+
+module.exports=userRouter;
