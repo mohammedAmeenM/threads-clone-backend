@@ -3,10 +3,7 @@ const userSchema=require('../model/userSchema')
 
 
 const otpSchema= new mongoose.Schema({
-    userId:{
-        type:mongoose.Types.ObjectId,
-        ref:userSchema
-    },
+   
     phoneNumber:String,
     otp:String,
     verified:{

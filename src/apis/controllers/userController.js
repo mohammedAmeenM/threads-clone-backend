@@ -10,7 +10,7 @@ const otpModel = require("../model/otpSchema");
 
 
 
-const sendOTP=async(userId,phoneNumber)=>{
+const sendOTP=async(phoneNumber)=>{
     const client=twilio(process.env.TWILIO_ACCOUNT_SID,process.env.TWILIO_AUTH_TOKEN)
     console.log(process.env.TWILIO_ACCOUNT_SID);
     try {
@@ -20,7 +20,7 @@ const sendOTP=async(userId,phoneNumber)=>{
             const updatingOtp= await otpModel.findOneAndUpdate({phoneNumber:`+91${phoneNumber}`},{$set:{otp:otp,verified:false}})
             updatingOtp.save();
         }else{
-            const otpData=new otpModel({userId:userId,phoneNumber:`+91${phoneNumber}`,otp:otp,otpExpired:new Date(Date.now() + 5 * 60 * 1000)})
+            const otpData=new otpModel({phoneNumber:`+91${phoneNumber}`,otp:otp,otpExpired:new Date(Date.now() + 5 * 60 * 1000)})
             otpData.save()
         }
 
@@ -48,14 +48,14 @@ const signupUser=async(req,res)=>{
         
         const allreaddyUser=await User.findOne({username})
         if(allreaddyUser){
-            await sendOTP(allreaddyUser._id,phoneNumber)
+            await sendOTP(phoneNumber)
             return res.status(409).json({error:'user already exists'})
         }
         const newUser=new User({
             name,username,email,password,phoneNumber
         })
         await newUser.save();
-        await sendOTP(newUser._id,phoneNumber) 
+        await sendOTP(phoneNumber) 
        
         res.status(201).json({
             _id: newUser._id,
@@ -69,7 +69,7 @@ const signupUser=async(req,res)=>{
     } catch (error) {
         res.status(500).json({
             status:"error",
-            message:'internal server error'
+            message:'internal server error' 
         })
         console.log(error);
     }
@@ -78,10 +78,10 @@ const signupUser=async(req,res)=>{
 
 const verifyOTP=async(req,res)=>{
     try {
-        const {userId,enterOTP}=req.body;
-        console.log(userId)
-       
-        const otpData=await otpModel.findOne({userId});
+        const {phoneNumber,enterOTP}=req.body;
+        const phNumber=`+91${phoneNumber}`
+       console.log(phNumber);
+        const otpData=await otpModel.findOne({phoneNumber:phNumber});
         if(!otpData){
             return res.status(404).json({status:'fail',message:'Otp not found this user'});
         }

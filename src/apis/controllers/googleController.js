@@ -37,4 +37,28 @@ const generateToken = require('../utils/generateToken');
       res.status(500).json({ error: "Internal Server Error" });
     }
   };
-  module.exports={googleSignup}
+
+  const googleLogin=async(req,res)=>{
+    try {
+      const {email}=req.body;
+      const user= await User.findOne({email});
+      if(!user){
+        return res.status(404).json({message:"invalid Email"});
+      }
+      const token = generateToken(user._id,res);
+      res.status(200).json({
+        message:"success",
+        _id:user._id,
+        email:user.email,
+        username:user.username,
+        profilePic:user.profilePic,
+        bio:user.bio,
+        token:token
+      })
+    } catch (error) {
+      res.status(500).json({ message: 'internal server' });
+      console.error(error,'google-login');
+    }
+  }
+
+  module.exports={ googleSignup , googleLogin }
