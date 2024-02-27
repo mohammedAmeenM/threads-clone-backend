@@ -11,5 +11,7 @@ postRouter.post('/post',uploadImage,(postConroller.createPost))
 .put('/post/:id',(postConroller.updatePost)) 
 .delete('/post/:id',(postConroller.deletePost))
 
+.post('/post/like/:id',(postConroller.likePost))
+
 
 module.exports=postRouter;

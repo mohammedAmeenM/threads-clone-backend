@@ -1,4 +1,4 @@
-const Post = require("../model/productSchema");
+const Post = require("../model/postSchema");
 
 
 
@@ -115,5 +115,26 @@ const deletePost=async(req,res)=>{
     }
 }
 
+const likePost=async (req,res)=>{
+    try {
+        const postId=req.params.id;
+        const {userId}=req.body;
+        const post=await Post.findById(postId);
+        if(!post)return res.status(404).json({error:'post not found'})
+        const likedpost=post.likes.includes(userId)
+    if(likedpost){
+        await Post.updateOne({_id:postId},{$pull:{likes:userId}})
+        res.status(200).json({message:'post unliked successfully'})
+    }else{
+        post.likes.push(userId);
+        await post.save();
+        res.status(200).json({ message: "Post Like succesfully" });
+    }
+    } catch (error) {
+        console.error(error,'err,like')
+        res.status(500).json({error:'internal server error'})
+    }
+}
 
-module.exports ={createPost,getAllPosts,getUserPost,getPostById,updatePost,deletePost};
+
+module.exports ={createPost,getAllPosts,getUserPost,getPostById,updatePost,deletePost,likePost};
