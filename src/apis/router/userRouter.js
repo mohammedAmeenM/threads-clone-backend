@@ -13,4 +13,6 @@ userRouter.post('/signup',(userController.signupUser))
 .post('/login',(userController.loginUser))
 
 
+
+
 module.exports=userRouter;

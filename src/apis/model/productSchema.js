@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const productSchema= mongoose.Schema({
-    postId:{
+    postById:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
-        required:true
+       
     },
     text:{
         type:String,
@@ -12,6 +12,13 @@ const productSchema= mongoose.Schema({
     },
     image:{
         type:String
+    },
+    tembImage:{
+        type:String
+    },
+    createdOn:{
+        type:Date,
+        default:Date.now()
     },
     likes:{
         type:[mongoose.Schema.Types.ObjectId],

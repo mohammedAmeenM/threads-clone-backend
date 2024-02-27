@@ -9,13 +9,11 @@ const generateToken = require('../utils/generateToken');
    const googleSignup = async (req, res) => {
     try {
       const { username, email, profilePic } = req.body;
-      console.log(username)
-      console.log("resbody:", username, email, profilePic);
-      const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+      // const existingUser = await User.findOne({ $or: [{ email }, { username }] });
   
-      if (existingUser) {
-        return res.status(400).json({ error: "Allredy registred" });
-      }
+      // if (existingUser) {
+      //   return res.status(400).json({ error: "Allredy registred" });
+      // }
   
       const newUser = new User({
         username, 
@@ -23,7 +21,9 @@ const generateToken = require('../utils/generateToken');
         profilePic: profilePic,
       });
   
-      await newUser.save();
+     const users= await newUser.save();
+     console.log(users,'aaa')
+
       generateToken(newUser._id, res);
       res.status(201).json({
         _id: newUser._id,
