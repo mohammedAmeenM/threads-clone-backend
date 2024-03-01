@@ -7,10 +7,12 @@ const { post } = require("../router/userRouter");
 const createPost=async (req,res)=>{
     try {
         const {userId,text,image}=req.body;
+        console.log(userId)
         if(!text && image){
             return res.status(404).json({error:"text or image must be provided"})
         };
         const newPost= new Post({
+
             postById:userId,
             text,
             image,
@@ -36,7 +38,8 @@ const getAllPosts=async(req,res)=>{
         }
         res.status(200).json({
             message:"successfully fetched posts",
-            posts,     
+            posts,
+               
         })
     } catch (error) {
         console.error(error,'getAllposts')

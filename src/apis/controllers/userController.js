@@ -142,4 +142,18 @@ const allUserProfile=async (req,res)=>{
         console.error(error,'all profile')
     }
 }
-module.exports={signupUser,loginUser,verifyOTP ,allUserProfile}
+const getUserProfile=async (req,res)=>{
+    try {
+        const userId=req.params.id;
+        const user=await User.findById(userId);
+        if(!user)return res.status(404).json({error:'user not found'})
+        res.status(200).json({
+            message:'successfully fetched user profile',
+            user:user
+        })
+    } catch (error) {
+        console.error(error,'get user')
+        res.status(500).json({error:'internal server errror'})
+    }
+}
+module.exports={signupUser,loginUser,verifyOTP ,allUserProfile,getUserProfile}

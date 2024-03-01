@@ -12,7 +12,7 @@ userRouter.post('/signup',(userController.signupUser))
 .post('/google-login',(googleController.googleLogin))
 .post('/login',(userController.loginUser))
 .get('/all',(userController.allUserProfile))
-
+.get('/profile/:id',(userController.getUserProfile))
 
 
 
