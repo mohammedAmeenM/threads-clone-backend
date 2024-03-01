@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const app=express();
 const core=require('cors');
 
-
+ 
 app.use(core())
 app.use(express.json());
 app.use(morgan('dev'));

@@ -1,4 +1,6 @@
 const Post = require("../model/postSchema");
+const User = require("../model/userSchema");
+const { post } = require("../router/userRouter");
 
 
 
@@ -28,13 +30,13 @@ const createPost=async (req,res)=>{
 
 const getAllPosts=async(req,res)=>{
     try {
-        const posts= await Post.find();
+        const posts= await Post.find().populate('postById');
         if(!posts){
            return res.status(404).json({error:"posts is not found"});
         }
         res.status(200).json({
             message:"successfully fetched posts",
-            post:posts
+            posts,     
         })
     } catch (error) {
         console.error(error,'getAllposts')
