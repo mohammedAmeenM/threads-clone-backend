@@ -25,6 +25,27 @@ const postSchema= mongoose.Schema({
         ref:"User",
         default:[]
     }
+    ,  replies: [{
+        text: String,
+        postedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        createdOn: {
+            type: Date,
+            default: Date.now()
+        }
+    }],
+    reposts: [{
+        repostedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        createdOn: {
+            type: Date,
+            default: Date.now()
+        }
+    }]
 })
 
 const Post= mongoose.model("Post",postSchema);

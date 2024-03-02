@@ -12,6 +12,7 @@ postRouter.post('/post',uploadImage,(postConroller.createPost))
 .delete('/post/:id',(postConroller.deletePost))
 
 .post('/post/like/:id',(postConroller.likePost))
-
+.post('/post/:id/replay',(postConroller.replyPost))
+.get('/post/reply/:id',(postConroller.getReplies))
 
 module.exports=postRouter;

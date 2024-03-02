@@ -13,7 +13,9 @@ userRouter.post('/signup',(userController.signupUser))
 .post('/login',(userController.loginUser))
 .get('/all',(userController.allUserProfile))
 .get('/profile/:id',(userController.getUserProfile))
-
+.post('/follow/:id',(userController.userFollowAndUnfollow))
+.get('/following/:id',(userController.getFollowingList))
+.get('/followers/:id',(userController.getFollowersList))
 
 
 module.exports=userRouter;

@@ -142,4 +142,42 @@ const likePost=async (req,res)=>{
 }
 
 
-module.exports ={createPost,getAllPosts,getUserPost,getPostById,updatePost,deletePost,likePost};
+const replyPost=async(req,res)=>{
+    try {
+        const {userId, text}=req.body;
+        const postId=req.params.id;
+        const post= await Post.findById(postId);
+        if(!post) return res.status(404).json({error:'post not found'})
+        
+        post.replies.push({text,postedBy:userId})
+       await post.save();
+        res.status(201).json({
+            message:'successfully add reply',
+            post
+            
+        })
+    }catch (error) {
+        console.error(error,'add replay');
+        res.status(500).json({error:'internal server error'});
+    }
+} 
+
+const getReplies=async (req,res)=>{
+    try {
+        const postId=req.params.id;
+        const postReply=await Post.findById(postId).populate('replies')
+        if(!postReply)return res.status(404).json({error:"post not found"})
+
+        res.status(200).json({
+            message:'successfully fetched post replies',
+            postReply
+        })
+    } catch (error) {
+        console.error(error,'error get reply')
+    }
+}
+
+
+module.exports ={createPost,getAllPosts,getUserPost,getPostById,updatePost,deletePost,likePost,
+replyPost,getReplies
+};

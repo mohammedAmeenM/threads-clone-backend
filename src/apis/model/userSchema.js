@@ -51,14 +51,18 @@ const userSchema=mongoose.Schema({
         type:Boolean,
         default:false
     },
-    followers:[{
-        userId:mongoose.Types.ObjectId,
-        type:String
-    }],
-    following:[{
-        userId:mongoose.Types.ObjectId,
-        type:String
-    }]
+    followers: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+      following: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
 
 })
 

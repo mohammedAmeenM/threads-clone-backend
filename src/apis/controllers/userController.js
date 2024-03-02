@@ -5,6 +5,7 @@ const twilio=require('twilio');
 const validatePhoneNumber = require("../utils/phoneValidation");
 const otpGenerate = require("../utils/otpGenerator");
 const otpModel = require("../model/otpSchema");
+const { AwsInstance } = require("twilio/lib/rest/accounts/v1/credential/aws");
 
 
 
@@ -156,4 +157,61 @@ const getUserProfile=async (req,res)=>{
         res.status(500).json({error:'internal server errror'})
     }
 }
-module.exports={signupUser,loginUser,verifyOTP ,allUserProfile,getUserProfile}
+const userFollowAndUnfollow=async (req,res)=>{
+    try {
+        const userId=req.params.id;
+        const {userFollowId}=req.body;
+        const user= await User.findById(userId);
+        const userToFollow = await User.findById(userFollowId)
+        if(!user||!userToFollow)return res.status(404).json({error:'user not found'})
+
+        const followingUser= user.following.includes(userFollowId)
+        if(followingUser){
+            await User.updateOne({_id:userId},{$pull:{following:userFollowId}})
+            await User.updateOne({_id:userFollowId},{$pull:{followers:userId}})
+            return res.status(400).json({error:' unfollowing this user'})
+        }else{
+            user.following.push(userFollowId);
+            userToFollow.followers.push(userId)
+            await user.save();
+            await userToFollow.save();
+            res.status(200).json({message:'user following successfully'})
+        }
+    } catch (error) {
+        console.error(error,'follow')
+        res.status(500).json({error:'internal server error'})
+    }
+}
+const getFollowingList=async(req,res)=>{
+    try {
+        const userId=req.params.id;
+        const user= await User.findById(userId).populate('following')
+        if(!user)return res.status(404).json({error:'user not found'})
+        res.status(200).json({
+            message:'successfully fetched following list',
+            user
+        })
+    } catch (error) {
+        console.error(error,'get following');
+        res.status(500).json({error:'internal server error'})
+    }
+}
+
+const getFollowersList=async(req,res)=>{
+    try {
+        const userId=req.params.id;
+        const user = await User.findById(userId).populate('followers')
+        if(!user)return res.status(404).json({error:'user not found'})
+        res.status(200).json({
+            message:'successfully fetched user followers',
+            user
+        })
+    } catch (error) {
+        console.error(error,'get follower')
+        res.status(500).json({error:'internal server error'})
+    }
+}
+
+module.exports={signupUser,loginUser,verifyOTP ,allUserProfile,getUserProfile,userFollowAndUnfollow,
+getFollowingList,getFollowersList
+}
