@@ -52,7 +52,7 @@ const getAllPosts=async(req,res)=>{
 const getUserPost= async(req,res)=>{
     try {
         const userId=req.params.id;
-        const posts=await Post.find({postById:userId});
+        const posts=await Post.find({postById:userId}).populate('postById');
         if(!posts){
             return res.status(404).json({error:"user post not found"});
         }
