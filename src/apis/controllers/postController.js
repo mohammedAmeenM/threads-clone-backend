@@ -54,7 +54,7 @@ const getUserPost= async(req,res)=>{
         const userId=req.params.id;
         const posts=await Post.find({postById:userId}).populate('postById');
         if(!posts){
-            return res.status(404).json({error:"user post not found"});
+            return res.status(404).json({error:"user post not found" });
         }
         res.status(200).json({
             message:'user post fetched successfully',
@@ -76,7 +76,7 @@ const getPostById=async(req,res)=>{
             return res.status(404).json({error:'post is not found'})
         }
         res.status(200).json({
-            message:'successfully fetched post',
+            message:'successfully fetched post', 
             post:post
         })
     } catch (error) {
@@ -120,27 +120,55 @@ const deletePost=async(req,res)=>{
     }
 }
 
-const likePost=async (req,res)=>{
+const likePost = async (req, res) => {
     try {
-        const postId=req.params.id;
-        const {userId}=req.body;
-        const post=await Post.findById(postId);
-        if(!post)return res.status(404).json({error:'post not found'})
-        const likedpost=post.likes.includes(userId)
-    if(likedpost){
-        await Post.updateOne({_id:postId},{$pull:{likes:userId}})
-        res.status(200).json({message:'post unliked successfully'})
-    }else{
+      const postId = req.params.id;
+      const { userId } = req.body;
+  
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+  
+      const likedPost = post.likes.includes(userId);
+  
+      if (likedPost) {
+        await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+        res.status(200).json({ message: 'Post unliked successfully' });
+      } else {
         post.likes.push(userId);
         await post.save();
-        res.status(200).json({ message: "Post Like succesfully" });
-    }
+        res.status(200).json({ message: 'Post liked successfully' });
+      }
     } catch (error) {
-        console.error(error,'err,like')
-        res.status(500).json({error:'internal server error'})
+      console.error(error, 'Error liking/unliking post');
+      res.status(500).json({ error: 'Internal server error' });
     }
-}
-
+  };
+  
+  const unlikePost = async (req, res) => {
+    try { 
+      const postId = req.params.id;
+      const { userId } = req.body;
+  
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+  
+      const likedPost = post.likes.includes(userId);
+  
+      if (!likedPost) {
+        return res.status(400).json({ error: 'Post has not been liked by this user' });
+      }
+  
+      await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+      res.status(200).json({ message: 'Post unliked successfully' });
+    } catch (error) {
+      console.error(error, 'Error unliking post');
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  };
 
 const replyPost=async(req,res)=>{
     try {
@@ -178,6 +206,6 @@ const getReplies=async (req,res)=>{
 }
 
 
-module.exports ={createPost,getAllPosts,getUserPost,getPostById,updatePost,deletePost,likePost,
+module.exports ={createPost,getAllPosts,getUserPost,getPostById,updatePost,deletePost,likePost,unlikePost,
 replyPost,getReplies
 };
