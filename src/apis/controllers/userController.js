@@ -5,7 +5,7 @@ const twilio=require('twilio');
 const validatePhoneNumber = require("../utils/phoneValidation");
 const otpGenerate = require("../utils/otpGenerator");
 const otpModel = require("../model/otpSchema");
-const { AwsInstance } = require("twilio/lib/rest/accounts/v1/credential/aws");
+const cloudinary = require("cloudinary").v2;
 
 
 
@@ -130,16 +130,14 @@ const loginUser=async (req,res)=>{
         console.log( error.message);
     }
 }
-const updateUser = async (req, res) => {
-    // console.log("creaded")
-    const { name, email, username, password, bio } = req.body; 
-    console.log("profile updae ",req.body)
-    let { profilePic } = req.body;
-  
-    console.log("Profiel pic form boy", profilePic);
-    const userId = req.user._id;
-   console.log( req.user._id)
+const updateUserProfile = async (req, res) => {
     try {
+        const userId = req.params.id;
+        const { name, username, email, bio } = req.body; 
+        const {profilePic}=req.body;
+        console.log(profilePic)
+      
+        console.log("nameeeee ", name,username,email,bio);
       let user = await User.findById(userId);
       if (!user) return res.status(400).json({ error: "User not found" });
   
@@ -148,32 +146,25 @@ const updateUser = async (req, res) => {
         return res
           .status(400)
           .json({ error: "You can't Update other user's profile" });
-  
-      if (password) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        user.password = hashedPassword;
-      }
-  
-      if (profilePic) {
+
+       if (profilePic) {
         if (user.profilePic) {
           await cloudinary.uploader.destroy(
-            user.profilePic.split("/").pop(".")[0]
+            user.profilePic.split("/").pop(".")[0]   
           );
         }
-        // const uploadProfile = await cloudinary.uploader.upload(profilePic)
-        // profilePic = uploadProfile.secure_url
+
       }
   
       user.name = name || user.name;
       user.email = email || user.email;
       user.username = username || user.username;
-      user.profilePic = profilePic || user.profilePic;
       user.bio = bio || user.bio;
+      user.profilePic = profilePic || user.profilePic;
   
-      user = await user.save();
+       user = await user.save();
   
-      res.status(200).json({ message: "Profile upadated succesfully", user });
+       res.status(200).json({ message: "Profile upadated succesfully", user }); 
     } catch (error) {
       res.status(500).json({ error: error.message });
       console.log("Error in updateUser: ", error.message);
@@ -285,6 +276,6 @@ const getFollowersList=async(req,res)=>{
     }
 }
 
-module.exports={signupUser,loginUser,verifyOTP ,allUserProfile,getUserProfile,userFollow,userUnfollow,
+module.exports={signupUser,loginUser,verifyOTP,updateUserProfile ,allUserProfile,getUserProfile,userFollow,userUnfollow,
 getFollowingList,getFollowersList
 }

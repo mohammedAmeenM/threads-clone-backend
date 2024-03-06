@@ -7,9 +7,10 @@ const core=require('cors');
 
  
 app.use(core())
+app.use(express.urlencoded({extended:true}))
 app.use(express.json());
 app.use(morgan('dev'));
-app.use('/api/users/',userRouter)
+app.use('/api/users/',userRouter) 
 app.use('/api/users/',postRouter)
 
 module.exports=app;
