@@ -193,7 +193,7 @@ const getUserProfile=async (req,res)=>{
             user:user
         })
     } catch (error) {
-        console.error(error,'get user')
+        console.error(error,'get user profile')
         res.status(500).json({error:'internal server errror'})
     }
 }
