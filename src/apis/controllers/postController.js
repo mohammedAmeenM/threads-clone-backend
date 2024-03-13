@@ -68,10 +68,12 @@ const getUserPost= async(req,res)=>{
     }
 }
 
+
+
 const getPostById=async(req,res)=>{
     try {
         const postId=req.params.id;
-        const post= await Post.findById(postId)
+        const post= await Post.findById(postId).populate('postById')
         if(!post){
             return res.status(404).json({error:'post is not found'})
         }
@@ -172,18 +174,25 @@ const likePost = async (req, res) => {
 
 const replyPost=async(req,res)=>{
     try {
-        const {userId, text}=req.body;
+        const {userId,text,userProfilePic,username}=req.body;
         const postId=req.params.id;
-        const post= await Post.findById(postId);
-        if(!post) return res.status(404).json({error:'post not found'})
-        
-        post.replies.push({text,postedBy:userId})
-       await post.save();
-        res.status(201).json({
-            message:'successfully add reply',
-            post
-            
-        })
+        const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not fount" });
+
+    if (!text) return res.status(400).json({ message: "Text is requied" });
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not fount" });
+
+    const replay = { userId, text, userProfilePic, username };
+
+    post.replies.push(replay);
+    await post.save();
+
+    user.repliedPosts.push(postId);
+    await user.save();
+    res.status(200).json({ message: "Replay added succesfulyy", replay });
     }catch (error) {
         console.error(error,'add replay');
         res.status(500).json({error:'internal server error'});
@@ -206,6 +215,30 @@ const getReplies=async (req,res)=>{
 }
 
 
+const getUserReplyPosts = async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const posts = await Post.find({ 'replies.userId': userId })
+            
+
+        if (!posts ) {
+            return res.status(404).json({ error: "No posts found where the user has replied" });
+        }
+
+        res.status(200).json({
+            message: 'User reply posts fetched successfully',
+            posts: posts
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "Internal server error"
+        });
+    }
+}
+
+
 module.exports ={createPost,getAllPosts,getUserPost,getPostById,updatePost,deletePost,likePost,unlikePost,
-replyPost,getReplies
+replyPost,getReplies,getUserReplyPosts
 };

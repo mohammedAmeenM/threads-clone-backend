@@ -57,6 +57,7 @@ const signupUser=async(req,res)=>{
         })
         await newUser.save();
         await sendOTP(phoneNumber) 
+        const token= generateToken(user._id,res)
        
         res.status(201).json({
             _id: newUser._id,
@@ -64,6 +65,7 @@ const signupUser=async(req,res)=>{
             username: newUser.username,
             email: newUser.email,
             phoneNumber:newUser.phoneNumber,
+            token:token
            
           });
 
@@ -123,6 +125,8 @@ const loginUser=async (req,res)=>{
             name:user.name,
             username:user.username,
             email:user.email,
+            profilePic:user.profilePic,
+            phoneNumber:user.phoneNumber,
             token:token
         })
     } catch (error) {
@@ -173,6 +177,7 @@ const updateUserProfile = async (req, res) => {
 
 const allUserProfile=async (req,res)=>{
     try {
+        console.log('scvbnm,')
         const users=await User.find();
         if(!users)return res.status(404).json({error:'users not found'});
         res.status(200).json({
@@ -181,6 +186,7 @@ const allUserProfile=async (req,res)=>{
         })
     } catch (error) {
         console.error(error,'all profile')
+        res.status(500).json({error:'internal server'})
     }
 }
 const getUserProfile=async (req,res)=>{

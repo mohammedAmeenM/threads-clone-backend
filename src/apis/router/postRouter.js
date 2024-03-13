@@ -13,7 +13,8 @@ postRouter.post('/post',uploadImage,(postConroller.createPost))
 
 .post('/post/like/:id',(postConroller.likePost))
 .post('/post/unlike/:id',(postConroller.unlikePost))
-.post('/post/:id/replay',(postConroller.replyPost))
+.post('/post/:id/reply',(postConroller.replyPost))
 .get('/post/reply/:id',(postConroller.getReplies))
+.get('/post/user/reply/:id',(postConroller.getUserReplyPosts))
 
 module.exports=postRouter;
