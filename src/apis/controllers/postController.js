@@ -32,7 +32,7 @@ const createPost=async (req,res)=>{
 
 const getAllPosts=async(req,res)=>{
     try {
-        const posts= await Post.find().populate('postById');
+        const posts= await Post.find().sort({ createdOn: -1 }).populate('postById')
         if(!posts){
            return res.status(404).json({error:"posts is not found"});
         }
@@ -52,7 +52,7 @@ const getAllPosts=async(req,res)=>{
 const getUserPost= async(req,res)=>{
     try {
         const userId=req.params.id;
-        const posts=await Post.find({postById:userId}).populate('postById');
+        const posts=await Post.find({postById:userId}).sort({ createdOn: -1 }).populate('postById');
         if(!posts){
             return res.status(404).json({error:"user post not found" });
         }
@@ -73,7 +73,7 @@ const getUserPost= async(req,res)=>{
 const getPostById=async(req,res)=>{
     try {
         const postId=req.params.id;
-        const post= await Post.findById(postId).populate('postById')
+        const post= await Post.findById(postId).sort({createdOn:-1}).populate('postById')
         if(!post){
             return res.status(404).json({error:'post is not found'})
         }
@@ -219,7 +219,7 @@ const getUserReplyPosts = async (req, res) => {
     try {
         const userId = req.params.id;
 
-        const posts = await Post.find({ 'replies.userId': userId })
+        const posts = await Post.find({ 'replies.userId': userId }).populate('postById')
             
 
         if (!posts ) {
