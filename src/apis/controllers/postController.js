@@ -86,11 +86,11 @@ const getPostById = async (req, res) => {
 
 const updatePost = async (req, res) => {
   try {
-    const { text, image } = req.body;
+    const { text} = req.body;
     const postId = req.params.id;
     const updatePost = await Post.findByIdAndUpdate(
       postId,
-      { text, image },
+      { text },
       { new: true }
     );
     if (!updatePost) {

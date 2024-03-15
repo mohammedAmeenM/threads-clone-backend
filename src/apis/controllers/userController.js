@@ -203,55 +203,57 @@ const getUserProfile=async (req,res)=>{
         res.status(500).json({error:'internal server errror'})
     }
 }
-const userFollow=async (req,res)=>{
-    try {
-        const logUserId=req.params.id;
-        const {userFollowId}=req.body;
-        console.log(logUserId,userFollowId,'dssfsdfsdf')
-        const user= await User.findById(logUserId);
-        const userToFollow = await User.findById(userFollowId)
-        if(!user||!userToFollow)return res.status(404).json({error:'user not found'})
+    const userFollow=async (req,res)=>{
+        try {
+            const logUserId=req.params.id;
+            const {userFollowId}=req.body;
+            console.log(logUserId,userFollowId,'follow')
+            const user= await User.findById(logUserId);
+            const userToFollow = await User.findById(userFollowId)
+            if(!user||!userToFollow)return res.status(404).json({error:'user not found'})
 
-        const followingUser= user.following.includes(userFollowId)
-        if(followingUser){
-            await User.updateOne({_id:logUserId},{$pull:{following:userFollowId}})
-            await User.updateOne({_id:userFollowId},{$pull:{followers:logUserId}})
-            return res.status(400).json({error:' unfollowing this user'})
-        }else{
-            user.following.push(userFollowId);
-            userToFollow.followers.push(logUserId)
-            await user.save();
-            await userToFollow.save();
-            res.status(200).json({message:'user following successfully'})
+            const followingUser= user.following.includes(userFollowId)
+            if(followingUser){
+                await User.updateOne({_id:logUserId},{$pull:{following:userFollowId}})
+                await User.updateOne({_id:userFollowId},{$pull:{followers:logUserId}})
+                return res.status(400).json({error:' unfollowing this user'})
+            }else{
+                user.following.push(userFollowId);
+                userToFollow.followers.push(logUserId)
+                await user.save();
+                await userToFollow.save();
+                res.status(200).json({message:'user following successfully'})
+            }
+        } catch (error) {
+            console.error(error,'follow')
+            res.status(500).json({error:'internal server error'})
         }
-    } catch (error) {
-        console.error(error,'follow')
-        res.status(500).json({error:'internal server error'})
     }
-}
-const userUnfollow = async (req, res) => {
-    try {
-        const logUserId = req.params.id;
-        const { userUnfollowId } = req.body; 
-        console.log(logUserId, userUnfollowId, 'unfollow'); 
-        
-        const user = await User.findById(logUserId);
-        const userToUnfollow = await User.findById(userUnfollowId);
-        if (!user || !userToUnfollow) return res.status(404).json({ error: 'User not found' });
+    const userUnfollow = async (req, res) => {
+        try {
+            const logUserId = req.params.id;
+            const { userUnfollowId } = req.body; 
+            console.log(logUserId, userUnfollowId, 'unfollow'); 
+            
+            const user = await User.findById(logUserId);
+            const userToUnfollow = await User.findById(userUnfollowId);
+            if (!user || !userToUnfollow) return res.status(404).json({ error: 'User not found' });
 
-        const followingUser = user.following.includes(userUnfollowId);
-        if (followingUser) {
-            await User.updateOne({ _id: logUserId }, { $pull: { following: userUnfollowId } });
-            await User.updateOne({ _id: userUnfollowId }, { $pull: { followers: logUserId } });
-            return res.status(200).json({ message: 'User unfollowed successfully' });
-        } else {
-            return res.status(400).json({ error: 'You are not following this user' });
+            const followingUser = user.following.includes(userUnfollowId);
+            if (followingUser) {
+                await User.updateOne({ _id: logUserId }, { $pull: { following: userUnfollowId } });
+                await User.updateOne({ _id: userUnfollowId }, { $pull: { followers: logUserId } });
+                return res.status(200).json({ message: 'User unfollowed successfully' });
+            } else {
+                return res.status(400).json({ error: 'You are not following this user' });
+            }
+        } catch (error) {
+            console.error(error, 'unfollow'); 
+            res.status(500).json({ error: 'Internal server error' });
         }
-    } catch (error) {
-        console.error(error, 'unfollow'); 
-        res.status(500).json({ error: 'Internal server error' });
     }
-}
+
+
 const getFollowingList=async(req,res)=>{
     try {
         const userId=req.params.id;
