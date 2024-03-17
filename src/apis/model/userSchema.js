@@ -68,6 +68,11 @@ const userSchema=mongoose.Schema({
         ref: "Post",
         default: [],
     },
+      repostedPosts: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Post",
+        default: [],
+    },
 
 })
 

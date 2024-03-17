@@ -54,6 +54,12 @@ const postSchema= mongoose.Schema({
         createdOn: {
             type: Date,
             default: Date.now()
+        },
+        userProfilePic: {
+            type: String
+        },
+        username: {
+            type: String
         }
     }]
 })

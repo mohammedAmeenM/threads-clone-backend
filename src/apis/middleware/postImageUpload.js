@@ -26,6 +26,7 @@ const uploadImage = (req, res, next) => {
         folder: "Product-IMG",
       });
       req.body.image = result.secure_url;
+      console.log( req.body.image,'1234567')
       fs.unlink(req.file.path, (unlink) => {
         if (unlink) {
           console.log("error deleting local file", unlink);

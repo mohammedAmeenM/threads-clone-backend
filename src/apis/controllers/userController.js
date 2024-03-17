@@ -57,7 +57,7 @@ const signupUser=async(req,res)=>{
         })
         await newUser.save();
         await sendOTP(phoneNumber) 
-        const token= generateToken(user._id,res)
+        const token= generateToken(newUser._id,res)
        
         res.status(201).json({
             _id: newUser._id,

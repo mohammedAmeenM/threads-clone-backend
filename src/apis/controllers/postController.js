@@ -38,7 +38,7 @@ const getAllPosts = async (req, res) => {
     });
   } catch (error) {
     console.error(error, "getAllposts");
-    req.status(500).json({
+    res.status(500).json({
       error: "internal server error",
     });
   }
@@ -51,11 +51,11 @@ const getUserPost = async (req, res) => {
       .sort({ createdOn: -1 })
       .populate("postById");
     if (!posts) {
-      return res.status(404).json({ error: "user post not found" });
+      return res.status(404).json({ error: "user post not found" }); 
     }
     res.status(200).json({
       message: "user post fetched successfully",
-      post: posts,
+      post: posts, 
     });
   } catch (error) {
     console.error(error);
@@ -242,6 +242,70 @@ const getUserReplyPosts = async (req, res) => {
   }
 };
 
+
+const repostPost = async (req, res) => {
+  try {
+    const { userId, userProfilePic, username } = req.body;
+    const postId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const existingRepost = post.reposts.find(repost => repost.repostedBy.toString() === userId);
+    if (existingRepost) return res.status(400).json({ message: "Post already reposted" });
+
+    const newRepost = {
+      repostedBy: userId,
+      userProfilePic,
+      username
+    };
+
+    post.reposts.push(newRepost);
+    await post.save();
+
+    user.repostedPosts.push(postId);
+    await user.save();
+
+    res.status(200).json({ message: "Post reposted successfully", repost: newRepost });
+  } catch (error) {
+    console.error("Error reposting post:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+const getUserRepostPosts = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const posts = await Post.find({ "reposts.repostedBy": userId }).populate(
+      "postById"
+    );
+
+    if (!posts || posts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No posts found where the user has reposted" });
+    }
+
+    res.status(200).json({
+      message: "User repost posts fetched successfully",
+      posts: posts,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+};
+
+
+
+
 module.exports = {
   createPost,
   getAllPosts,
@@ -254,4 +318,6 @@ module.exports = {
   replyPost,
   getReplies,
   getUserReplyPosts,
+  repostPost,
+  getUserRepostPosts
 };
