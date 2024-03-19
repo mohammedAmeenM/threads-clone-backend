@@ -19,6 +19,7 @@ userRouter.post('/signup',(userController.signupUser))
 .post('/unfollow/:id',(userController.userUnfollow))
 .get('/following/:id',(userController.getFollowingList))
 .get('/followers/:id',(userController.getFollowersList))
+.get('/notification/:id',(userController.getNotifications))
 
 
 module.exports=userRouter;
