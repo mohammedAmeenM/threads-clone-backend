@@ -1,3 +1,4 @@
+const Notification = require("../model/notificationSchema");
 const Post = require("../model/postSchema");
 const User = require("../model/userSchema");
 
@@ -125,7 +126,7 @@ const deletePost = async (req, res) => {
 const likePost = async (req, res) => {
   try {
     const postId = req.params.id;
-    const { userId } = req.body;
+    const { userId,username } = req.body;
 
     const post = await Post.findById(postId);
     if (!post) {
@@ -140,6 +141,15 @@ const likePost = async (req, res) => {
     } else {
       post.likes.push(userId);
       await post.save();
+      // Create notification
+      const notification = new Notification({
+        senderUserId: userId,
+        reciveUserId: post.postById,
+        postId: postId,
+        type: 'like',
+        description: `${username} liked your post.`,
+      });
+      await notification.save();
       res.status(200).json({ message: "Post liked successfully" });
     }
   } catch (error) {
@@ -167,6 +177,8 @@ const unlikePost = async (req, res) => {
     }
 
     await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+    // Create notification
+   
     res.status(200).json({ message: "Post unliked successfully" });
   } catch (error) {
     console.error(error, "Error unliking post");
