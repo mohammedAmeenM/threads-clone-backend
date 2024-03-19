@@ -1,4 +1,4 @@
-const Post = require('../model/postSchema')
+const Post = require("../model/postSchema");
 const User = require("../model/userSchema");
 
 const createPost = async (req, res) => {
@@ -51,11 +51,11 @@ const getUserPost = async (req, res) => {
       .sort({ createdOn: -1 })
       .populate("postById");
     if (!posts) {
-      return res.status(404).json({ error: "user post not found" }); 
+      return res.status(404).json({ error: "user post not found" });
     }
     res.status(200).json({
       message: "user post fetched successfully",
-      post: posts, 
+      post: posts,
     });
   } catch (error) {
     console.error(error);
@@ -86,7 +86,7 @@ const getPostById = async (req, res) => {
 
 const updatePost = async (req, res) => {
   try {
-    const { text} = req.body;
+    const { text } = req.body;
     const postId = req.params.id;
     const updatePost = await Post.findByIdAndUpdate(
       postId,
@@ -242,7 +242,6 @@ const getUserReplyPosts = async (req, res) => {
   }
 };
 
-
 const repostPost = async (req, res) => {
   try {
     const { userId, userProfilePic, username } = req.body;
@@ -254,13 +253,16 @@ const repostPost = async (req, res) => {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    const existingRepost = post.reposts.find(repost => repost.repostedBy.toString() === userId);
-    if (existingRepost) return res.status(400).json({ message: "Post already reposted" });
+    const existingRepost = post.reposts.find(
+      (repost) => repost.repostedBy.toString() === userId
+    );
+    if (existingRepost)
+      return res.status(400).json({ message: "Post already reposted" });
 
     const newRepost = {
       repostedBy: userId,
       userProfilePic,
-      username
+      username,
     };
 
     post.reposts.push(newRepost);
@@ -269,13 +271,14 @@ const repostPost = async (req, res) => {
     user.repostedPosts.push(postId);
     await user.save();
 
-    res.status(200).json({ message: "Post reposted successfully", repost: newRepost });
+    res
+      .status(200)
+      .json({ message: "Post reposted successfully", repost: newRepost });
   } catch (error) {
     console.error("Error reposting post:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 const getUserRepostPosts = async (req, res) => {
   try {
@@ -303,9 +306,6 @@ const getUserRepostPosts = async (req, res) => {
   }
 };
 
-
-
-
 module.exports = {
   createPost,
   getAllPosts,
@@ -319,5 +319,5 @@ module.exports = {
   getReplies,
   getUserReplyPosts,
   repostPost,
-  getUserRepostPosts
+  getUserRepostPosts,
 };
