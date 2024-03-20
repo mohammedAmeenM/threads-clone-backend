@@ -126,7 +126,8 @@ const deletePost = async (req, res) => {
 const likePost = async (req, res) => {
   try {
     const postId = req.params.id;
-    const { userId,username } = req.body;
+    const { userId } = req.body;
+
 
     const post = await Post.findById(postId);
     if (!post) {
@@ -147,7 +148,7 @@ const likePost = async (req, res) => {
         reciveUserId: post.postById,
         postId: postId,
         type: 'like',
-        description: `${username} liked your post.`,
+        description: `Liked your post.`,
       });
       await notification.save();
       res.status(200).json({ message: "Post liked successfully" });

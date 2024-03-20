@@ -211,8 +211,7 @@ const getUserProfile = async (req, res) => {
 const userFollow = async (req, res) => {
   try {
     const logUserId = req.params.id;
-    const { userFollowId, username } = req.body;
-    console.log(logUserId, userFollowId, "adg");
+    const { userFollowId } = req.body;
 
     const user = await User.findById(logUserId);
     const userToFollow = await User.findById(userFollowId);
@@ -240,7 +239,7 @@ const userFollow = async (req, res) => {
         senderUserId: logUserId,
         reciveUserId: userFollowId,
         type: "follow",
-        description: `${username} started following you.`,
+        description: `Started following you.`,
       });
       await notification.save();
 
@@ -318,9 +317,10 @@ const getNotifications = async (req, res) => {
 
     const notifications = await Notification.find({ reciveUserId: userId })
       .sort({ createdAt: -1 })
-      .populate("senderUserId", "username")
-      .populate("postId", "text")
+      .populate("senderUserId") 
       .exec();
+
+ 
 
     res.status(200).json({ notifications });
   } catch (error) {
