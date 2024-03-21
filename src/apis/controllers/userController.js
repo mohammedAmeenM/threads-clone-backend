@@ -271,6 +271,13 @@ const userUnfollow = async (req, res) => {
         { _id: userUnfollowId },
         { $pull: { followers: logUserId } }
       );
+
+      await Notification.deleteOne({
+        senderUserId: logUserId,
+        reciveUserId: userUnfollowId,
+        type: "follow"
+      });
+      
       return res.status(200).json({ message: "User unfollowed successfully" });
     } else {
       return res.status(400).json({ error: "You are not following this user" });

@@ -178,7 +178,13 @@ const unlikePost = async (req, res) => {
     }
 
     await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-    // Create notification
+    
+    await Notification.deleteOne({
+      senderUserId: userId,
+      reciveUserId: post.postById,
+      postId: postId,
+      type: 'like'
+    });
    
     res.status(200).json({ message: "Post unliked successfully" });
   } catch (error) {
