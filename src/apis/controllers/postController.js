@@ -128,7 +128,6 @@ const likePost = async (req, res) => {
     const postId = req.params.id;
     const { userId } = req.body;
 
-
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
@@ -147,7 +146,7 @@ const likePost = async (req, res) => {
         senderUserId: userId,
         reciveUserId: post.postById,
         postId: postId,
-        type: 'like',
+        type: "like",
         description: `Liked your post.`,
       });
       await notification.save();
@@ -178,14 +177,14 @@ const unlikePost = async (req, res) => {
     }
 
     await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-    
+
     await Notification.deleteOne({
       senderUserId: userId,
       reciveUserId: post.postById,
       postId: postId,
-      type: 'like'
+      type: "like",
     });
-   
+
     res.status(200).json({ message: "Post unliked successfully" });
   } catch (error) {
     console.error(error, "Error unliking post");
