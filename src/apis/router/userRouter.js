@@ -6,7 +6,7 @@ const imageUpload = require("../middleware/imageUpload");
 
 userRouter
   .post("/signup", userController.signupUser)
-  .post("/verifyOTP", userController.verifyOTP)
+  // .post("/verifyOTP", userController.verifyOTP)
   .post("/signup-google", googleController.googleSignup)
   .post("/google-login", googleController.googleLogin)
   .post("/login", userController.loginUser)

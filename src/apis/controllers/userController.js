@@ -8,56 +8,56 @@ const otpModel = require("../model/otpSchema");
 const Notification = require("../model/notificationSchema");
 const cloudinary = require("cloudinary").v2;
 
-const sendOTP = async (phoneNumber) => {
-  const client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
-  console.log(process.env.TWILIO_ACCOUNT_SID);
-  try {
-    const otp = await otpGenerate();
-    const numberFinding = await otpModel.findOne({
-      phoneNumber: `+91${phoneNumber}`,
-    });
-    if (numberFinding) {
-      const updatingOtp = await otpModel.findOneAndUpdate(
-        { phoneNumber: `+91${phoneNumber}` },
-        { $set: { otp: otp, verified: false } }
-      );
-      updatingOtp.save();
-    } else {
-      const otpData = new otpModel({
-        phoneNumber: `+91${phoneNumber}`,
-        otp: otp,
-        otpExpired: new Date(Date.now() + 5 * 60 * 1000),
-      });
-      otpData.save();
-    }
+// const sendOTP = async (phoneNumber) => {
+//   const client = twilio(
+//     process.env.TWILIO_ACCOUNT_SID,
+//     process.env.TWILIO_AUTH_TOKEN
+//   );
+//   console.log(process.env.TWILIO_ACCOUNT_SID);
+//   try {
+//     const otp = await otpGenerate();
+//     const numberFinding = await otpModel.findOne({
+//       phoneNumber: `+91${phoneNumber}`,
+//     });
+//     if (numberFinding) {
+//       const updatingOtp = await otpModel.findOneAndUpdate(
+//         { phoneNumber: `+91${phoneNumber}` },
+//         { $set: { otp: otp, verified: false } }
+//       );
+//       updatingOtp.save();
+//     } else {
+//       const otpData = new otpModel({
+//         phoneNumber: `+91${phoneNumber}`,
+//         otp: otp,
+//         otpExpired: new Date(Date.now() + 5 * 60 * 1000),
+//       });
+//       otpData.save();
+//     }
 
     // otp send to twilio
 
-    await client.messages.create({
-      body: `Your otp is :${otp} by ameeiiieeee`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: `+91${phoneNumber}`,
-    });
-    console.log("OTP sent successfully.");
-  } catch (error) {
-    console.error("Twilio API Error Response:");
-  }
-};
+//     await client.messages.create({
+//       body: `Your otp is :${otp} by ameeiiieeee`,
+//       from: process.env.TWILIO_PHONE_NUMBER,
+//       to: `+91${phoneNumber}`,
+//     });
+//     console.log("OTP sent successfully.");
+//   } catch (error) {
+//     console.error("Twilio API Error Response:");
+//   }
+// };
 const signupUser = async (req, res) => {
   try {
     const { name, username, email, password, phoneNumber } = req.body;
-    console.log(name);
-    const isValidPhoneNumber = await validatePhoneNumber(phoneNumber);
-    if (!isValidPhoneNumber) {
-      return res.status(400).json({ error: "Invalid phone number" });
-    }
+    // console.log(name);
+    // const isValidPhoneNumber = await validatePhoneNumber(phoneNumber);
+    // if (!isValidPhoneNumber) {
+    //   return res.status(400).json({ error: "Invalid phone number" });
+    // }
 
     const allreaddyUser = await User.findOne({ username });
     if (allreaddyUser) {
-      await sendOTP(phoneNumber);
+      // await sendOTP(phoneNumber);
       return res.status(409).json({ error: "user already exists" });
     }
     const newUser = new User({
@@ -68,7 +68,7 @@ const signupUser = async (req, res) => {
       phoneNumber,
     });
     await newUser.save();
-    await sendOTP(phoneNumber);
+    // await sendOTP(phoneNumber);
     const token = generateToken(newUser._id, res);
 
     res.status(201).json({
@@ -88,32 +88,32 @@ const signupUser = async (req, res) => {
   }
 };
 
-const verifyOTP = async (req, res) => {
-  try {
-    const { phoneNumber, enterOTP } = req.body;
-    const phNumber = `+91${phoneNumber}`;
-    console.log(phNumber);
-    const otpData = await otpModel.findOne({ phoneNumber: phNumber });
-    if (!otpData) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "Otp not found this user" });
-    }
-    console.log(otpData.otp);
-    if (otpData.otp !== enterOTP) {
-      return res.status(400).json({ message: "invalid OTP" });
-    }
-    // if(otpData.otpExpired<new Date()){
-    //     return res.status(400).json({message:"OTP has expired"})
-    // }
-    otpData.verified = true;
-    await otpData.save();
-    res.status(200).json({ message: "OTP verified successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "internal server error" });
-  }
-};
+// const verifyOTP = async (req, res) => {
+//   try {
+//     const { phoneNumber, enterOTP } = req.body;
+//     const phNumber = `+91${phoneNumber}`;
+//     console.log(phNumber);
+//     const otpData = await otpModel.findOne({ phoneNumber: phNumber });
+//     if (!otpData) {
+//       return res
+//         .status(404)
+//         .json({ status: "fail", message: "Otp not found this user" });
+//     }
+//     console.log(otpData.otp);
+//     if (otpData.otp !== enterOTP) {
+//       return res.status(400).json({ message: "invalid OTP" });
+//     }
+//     // if(otpData.otpExpired<new Date()){
+//     //     return res.status(400).json({message:"OTP has expired"})
+//     // }
+//     otpData.verified = true;
+//     await otpData.save();
+//     res.status(200).json({ message: "OTP verified successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "internal server error" });
+//   }
+// };
 
 const loginUser = async (req, res) => {
   try {
@@ -339,7 +339,7 @@ const getNotifications = async (req, res) => {
 module.exports = {
   signupUser,
   loginUser,
-  verifyOTP,
+  // verifyOTP,
   updateUserProfile,
   allUserProfile,
   getUserProfile,
