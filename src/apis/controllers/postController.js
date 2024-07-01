@@ -47,7 +47,7 @@ const getAllPosts = async (req, res) => {
 
 const getUserPost = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     const posts = await Post.find({ postById: userId })
       .sort({ createdOn: -1 })
       .populate("postById");
@@ -68,7 +68,7 @@ const getUserPost = async (req, res) => {
 
 const getPostById = async (req, res) => {
   try {
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const post = await Post.findById(postId)
       .sort({ createdOn: -1 })
       .populate("postById");
@@ -88,7 +88,7 @@ const getPostById = async (req, res) => {
 const updatePost = async (req, res) => {
   try {
     const { text } = req.body;
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const updatePost = await Post.findByIdAndUpdate(
       postId,
       { text },
@@ -109,7 +109,7 @@ const updatePost = async (req, res) => {
 
 const deletePost = async (req, res) => {
   try {
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const deletepost = await Post.findByIdAndDelete(postId);
     if (!deletepost) {
       return res.status(404).json({ error: "post is not found" });
@@ -125,7 +125,7 @@ const deletePost = async (req, res) => {
 
 const likePost = async (req, res) => {
   try {
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const { userId } = req.body;
 
     const post = await Post.findById(postId);
@@ -160,7 +160,7 @@ const likePost = async (req, res) => {
 
 const unlikePost = async (req, res) => {
   try {
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const { userId } = req.body;
 
     const post = await Post.findById(postId);
@@ -195,7 +195,7 @@ const unlikePost = async (req, res) => {
 const replyPost = async (req, res) => {
   try {
     const { userId, text, userProfilePic, username } = req.body;
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const user = await User.findById(userId);
 
     if (!user) return res.status(404).json({ message: "User not fount" });
@@ -221,7 +221,7 @@ const replyPost = async (req, res) => {
 
 const getReplies = async (req, res) => {
   try {
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const postReply = await Post.findById(postId).populate("replies");
     if (!postReply) return res.status(404).json({ error: "post not found" });
 
@@ -236,7 +236,7 @@ const getReplies = async (req, res) => {
 
 const getUserReplyPosts = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
 
     const posts = await Post.find({ "replies.userId": userId }).populate(
       "postById"
@@ -263,7 +263,7 @@ const getUserReplyPosts = async (req, res) => {
 const repostPost = async (req, res) => {
   try {
     const { userId, userProfilePic, username } = req.body;
-    const postId = req.params.id;
+    const postId = req.params.postId;
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -300,7 +300,7 @@ const repostPost = async (req, res) => {
 
 const getUserRepostPosts = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
 
     const posts = await Post.find({ "reposts.repostedBy": userId }).populate(
       "postById"

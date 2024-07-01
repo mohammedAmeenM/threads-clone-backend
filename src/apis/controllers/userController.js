@@ -72,6 +72,8 @@ const signupUser = async (req, res) => {
     const token = generateToken(newUser._id, res);
 
     res.status(201).json({
+      status:"success",
+      message:"successfully created"
       _id: newUser._id,
       name: newUser.name,
       username: newUser.username,
@@ -143,7 +145,7 @@ const loginUser = async (req, res) => {
 };
 const updateUserProfile = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     const { name, username, email, bio } = req.body;
     const { profilePic } = req.body;
     console.log(profilePic);
@@ -196,7 +198,7 @@ const allUserProfile = async (req, res) => {
 };
 const getUserProfile = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "user not found" });
     res.status(200).json({
@@ -210,7 +212,7 @@ const getUserProfile = async (req, res) => {
 };
 const userFollow = async (req, res) => {
   try {
-    const logUserId = req.params.id;
+    const logUserId = req.params.senderId;
     const { userFollowId } = req.body;
 
     const user = await User.findById(logUserId);
@@ -252,7 +254,7 @@ const userFollow = async (req, res) => {
 };
 const userUnfollow = async (req, res) => {
   try {
-    const logUserId = req.params.id;
+    const logUserId = req.params.senderId;
     const { userUnfollowId } = req.body;
     console.log(logUserId, userUnfollowId, "unfollow");
 
@@ -290,7 +292,7 @@ const userUnfollow = async (req, res) => {
 
 const getFollowingList = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     const user = await User.findById(userId).populate("following");
     if (!user) return res.status(404).json({ error: "user not found" });
     res.status(200).json({
@@ -305,7 +307,7 @@ const getFollowingList = async (req, res) => {
 
 const getFollowersList = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     const user = await User.findById(userId).populate("followers");
     if (!user) return res.status(404).json({ error: "user not found" });
     res.status(200).json({
@@ -320,7 +322,7 @@ const getFollowersList = async (req, res) => {
 
 const getNotifications = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
 
     const notifications = await Notification.find({ reciveUserId: userId })
       .sort({ createdAt: -1 })

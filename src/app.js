@@ -11,6 +11,6 @@ app.use(express.urlencoded({extended:true}))
 app.use(express.json());
 app.use(morgan('dev'));
 app.use('/api/users/',userRouter) 
-app.use('/api/users/',postRouter)
+app.use('/api/posts/',postRouter)
 
 module.exports=app;

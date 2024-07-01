@@ -11,16 +11,16 @@ userRouter
   .post("/google-login", googleController.googleLogin)
   .post("/login", userController.loginUser)
   .patch(
-    "/updateProfile/:id",
+    "/:userId",
     imageUpload("profilePic"),
     userController.updateUserProfile
   )
-  .get("/all", userController.allUserProfile)
-  .get("/profile/:id", userController.getUserProfile)
-  .post("/follow/:id", userController.userFollow)
-  .post("/unfollow/:id", userController.userUnfollow)
-  .get("/following/:id", userController.getFollowingList)
-  .get("/followers/:id", userController.getFollowersList)
-  .get("/notification/:id", userController.getNotifications);
+  .get("/", userController.allUserProfile)
+  .get("/:userId", userController.getUserProfile)
+  .post("/follow/:senderId", userController.userFollow)
+  .post("/unfollow/:senderId", userController.userUnfollow)
+  .get("/following/:userId", userController.getFollowingList)
+  .get("/followers/:userId", userController.getFollowersList)
+  .get("/notification/:userId", userController.getNotifications);
 
 module.exports = userRouter;
